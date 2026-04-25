@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>After Dark — Blog Erotyczny dla Dorosłych</title>
+<meta name="description" content="Porady, inspiracje i przewodniki dla par. Odkryj swoje pragnienia z After Dark.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-icon">🌙</span>
+      <span class="logo-text">AFTER <em>DARK</em></span>
+    </a>
+    <nav class="main-nav">
+      <a href="#" data-cat="all" class="nav-link active">Wszystko</a>
+      <a href="#" data-cat="zwiazki" class="nav-link">Związki</a>
+      <a href="#" data-cat="zabawy" class="nav-link">Zabawy</a>
+      <a href="#" data-cat="fantazje" class="nav-link">Fantazje</a>
+      <a href="#" data-cat="porady" class="nav-link">Porady</a>
+      <a href="#" data-cat="lifestyle" class="nav-link">Lifestyle</a>
+      <a href="https://www.graerotyczna.online/gallery" target="_blank" class="nav-link nav-gallery">📸 Galeria</a>
+    </nav>
+    <div class="header-actions">
+      <a href="admin/index.html" class="admin-link" title="Panel admina">⚙</a>
+      <a href="https://www.afterdarkadultgame.com" target="_blank" class="cta-btn">Graj teraz ↗</a>
+    </div>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#" data-cat="all" class="nav-link">Wszystko</a>
+    <a href="#" data-cat="zwiazki" class="nav-link">Związki</a>
+    <a href="#" data-cat="zabawy" class="nav-link">Zabawy</a>
+    <a href="#" data-cat="fantazje" class="nav-link">Fantazje</a>
+    <a href="#" data-cat="porady" class="nav-link">Porady</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <span class="hero-tag">🔥 POLECANY</span>
+    <h1 class="hero-title" id="heroTitle">Jak rozpalić ogień w związku — przewodnik dla odważnych par</h1>
+    <p class="hero-excerpt" id="heroExcerpt">Rutyna to cichy wróg namiętności. Odkryj sprawdzone sposoby, by każdy wieczór zamienić w niezapomniane przeżycie. Po trzech minutach z After Dark już nic nie będzie takie samo...</p>
+    <div class="hero-meta">
+      <span class="hero-cat" id="heroCat">Związki</span>
+      <span class="hero-read">5 min czytania</span>
+      <span class="hero-date" id="heroDate"></span>
+    </div>
+    <a href="#" class="hero-btn" id="heroLink">Czytaj artykuł →</a>
+  </div>
+  <div class="hero-scroll">↓</div>
+</section>
+
+<!-- POSTS GRID -->
+<main class="main-content">
+  <div class="section-header">
+    <h2 class="section-title">Najnowsze artykuły</h2>
+    <div class="cat-filter">
+      <button class="cat-btn active" data-cat="all">Wszystkie</button>
+      <button class="cat-btn" data-cat="zwiazki">Związki</button>
+      <button class="cat-btn" data-cat="zabawy">Zabawy</button>
+      <button class="cat-btn" data-cat="fantazje">Fantazje</button>
+      <button class="cat-btn" data-cat="porady">Porady</button>
+      <button class="cat-btn" data-cat="lifestyle">Lifestyle</button>
+    </div>
+  </div>
+
+  <div class="posts-grid" id="postsGrid">
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Ładowanie artykułów...</p>
+    </div>
+  </div>
+
+  <div class="load-more-wrap">
+    <button class="load-more-btn" id="loadMoreBtn" onclick="loadMore()" style="display:none">Więcej artykułów</button>
+  </div>
+</main>
+
+<!-- GALLERY SECTION -->
+<section class="gallery-section">
+  <div class="gallery-inner">
+    <div class="gallery-header">
+      <div>
+        <span class="gallery-tag">📸 GALERIA</span>
+        <h2 class="gallery-title">Chwile z After Dark</h2>
+        <p class="gallery-sub">Inspiracje, nastroje i atmosfera naszej gry</p>
+      </div>
+      <a href="https://www.afterdarkadultgame.com" target="_blank" class="gallery-all-btn">Zagraj teraz →</a>
+    </div>
+    <div class="gallery-full-grid">
+      <div class="gallery-item-full">
+        <img src="https://graerotyczna.online/screenshots/after-dark-game-for-couples-cover.jpg" alt="After Dark – okładka" loading="lazy">
+        <div class="gallery-overlay"><span>After Dark</span></div>
+      </div>
+      <div class="gallery-item-full">
+        <img src="https://graerotyczna.online/screenshots/after-dark-erotic-game-couples-playing-cards.jpg" alt="After Dark – para z kartami" loading="lazy">
+        <div class="gallery-overlay"><span>Your game, your rules...</span></div>
+      </div>
+      <div class="gallery-item-full">
+        <img src="https://graerotyczna.online/screenshots/after-dark-intimate-game-couple-bedroom.jpg" alt="After Dark – sypialnia" loading="lazy">
+        <div class="gallery-overlay"><span>After Dark</span></div>
+      </div>
+      <div class="gallery-item-full">
+        <img src="https://graerotyczna.online/screenshots/after-dark-7-day-access-game-for-couples.png" alt="After Dark – 7-day access" loading="lazy">
+        <div class="gallery-overlay"><span>7-Day Access</span></div>
+      </div>
+      <div class="gallery-item-full">
+        <img src="https://graerotyczna.online/screenshots/after-dark-erotic-game-couples-forget-world-en.png" alt="After Dark – forget the world" loading="lazy">
+        <div class="gallery-overlay"><span>Forget the world...</span></div>
+      </div>
+      <div class="gallery-item-full">
+        <img src="https://graerotyczna.online/screenshots/after-dark-erotic-game-couples-your-rules-en.png" alt="After Dark – your rules" loading="lazy">
+        <div class="gallery-overlay"><span>Your rules...</span></div>
+      </div>
+      <div class="gallery-item-full">
+        <img src="https://graerotyczna.online/screenshots/after-dark-mobile-game-your-rules-en.jpeg" alt="After Dark – mobile" loading="lazy">
+        <div class="gallery-overlay"><span>After Dark Mobile</span></div>
+      </div>
+      <div class="gallery-item-full">
+        <img src="https://graerotyczna.online/screenshots/after-dark-mobile-erotic-game-en-slide4.jpeg" alt="After Dark – mobile slide" loading="lazy">
+        <div class="gallery-overlay"><span>After Dark</span></div>
+      </div>
+      <div class="gallery-item-full">
+        <img src="https://graerotyczna.online/screenshots/after-dark-juego-erotico-parejas-reglas-es.png" alt="After Dark – ES" loading="lazy">
+        <div class="gallery-overlay"><span>Tus reglas...</span></div>
+      </div>
+      <div class="gallery-item-full">
+        <img src="https://graerotyczna.online/screenshots/after-dark-juego-erotico-parejas-mundo-es.png" alt="After Dark – ES mundo" loading="lazy">
+        <div class="gallery-overlay"><span>Olvida el mundo...</span></div>
+      </div>
+      <div class="gallery-item-full">
+        <img src="https://graerotyczna.online/screenshots/after-dark-jeu-erotique-couples-regles-fr.png" alt="After Dark – FR" loading="lazy">
+        <div class="gallery-overlay"><span>Vos règles...</span></div>
+      </div>
+      <div class="gallery-item-full">
+        <img src="https://graerotyczna.online/screenshots/after-dark-jeu-erotique-couples-monde-fr.png" alt="After Dark – FR monde" loading="lazy">
+        <div class="gallery-overlay"><span>Oubliez le monde...</span></div>
+      </div>
+    </div>
+    <div class="gallery-cta-wrap">
+      <a href="https://www.afterdarkadultgame.com" target="_blank" class="gallery-cta-link">
+        🎮 Zagraj w After Dark — 200+ wyzwań dla par →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- GAME CTA BANNER -->
+<section class="game-cta" id="game-cta">
+  <div class="game-cta-inner">
+    <div class="game-cta-text">
+      <span class="game-cta-tag">🎮 GRA EROTYCZNA</span>
+      <h2>Gotowy na coś więcej?</h2>
+      <p>200+ pikantnych wyzwań dla par. Zacznij grać za darmo — bez rejestracji.</p>
+    </div>
+    <a href="https://www.afterdarkadultgame.com" target="_blank" class="game-cta-btn">Zagraj teraz →</a>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="newsletter">
+  <div class="newsletter-inner">
+    <div class="newsletter-icon">💌</div>
+    <h3>Subskrybuj — bądź pierwszy</h3>
+    <p>Nowe artykuły, porady i ekskluzywne treści prosto na Twój email.</p>
+    <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+      <input type="email" placeholder="Twój adres email..." required class="newsletter-input">
+      <button type="submit" class="newsletter-btn">Zapisz się</button>
+    </form>
+    <p class="newsletter-note">Bez spamu. Możesz wypisać się w każdej chwili.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">🌙</span>
+        <span class="logo-text">AFTER <em>DARK</em></span>
+      </a>
+      <p>Blog erotyczny dla dorosłych. Tylko dla osób 18+.</p>
+    </div>
+    <div class="footer-links">
+      <h4>Kategorie</h4>
+      <a href="#">Związki</a>
+      <a href="#">Zabawy dla par</a>
+      <a href="#">Fantazje</a>
+      <a href="#">Porady</a>
+      <a href="#">Lifestyle</a>
+    </div>
+    <div class="footer-links">
+      <h4>After Dark</h4>
+      <a href="https://www.afterdarkadultgame.com" target="_blank">Gra erotyczna</a>
+      <a href="https://www.graerotyczna.online/gallery" target="_blank">Galeria</a>
+      <a href="https://www.graerotyczna.online/community" target="_blank">Społeczność</a>
+      <a href="#">Polityka prywatności</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 After Dark. Treści tylko dla osób pełnoletnich 18+.</p>
+  </div>
+</footer>
+
+<!-- POST MODAL (czytanie artykułu) -->
+<div class="post-modal" id="postModal">
+  <div class="modal-overlay" onclick="closeModal()"></div>
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

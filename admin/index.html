@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — After Dark Blog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080608; --bg2: #110d10; --bg3: #1a141a; --card: #140f14;
+  --border: rgba(180,60,100,0.15); --crimson: #9B1F52; --rose: #C4446A;
+  --gold: #C8902A; --cream: #ede0d4; --muted: #8a7a80; --white: #f5ece8;
+  --font-head: 'Cormorant Garamond', serif; --font-body: 'Inter', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--cream); font-family: var(--font-body); min-height: 100vh; }
+
+/* LOGIN */
+.login-screen {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at center, rgba(155,31,82,0.08) 0%, var(--bg) 70%);
+}
+.login-box {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 16px; padding: 48px; width: 360px; text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+.login-logo { font-family: var(--font-head); font-size: 2rem; color: var(--white); margin-bottom: 8px; }
+.login-logo em { color: var(--gold); font-style: normal; }
+.login-sub { color: var(--muted); font-size: .85rem; margin-bottom: 32px; }
+.login-input {
+  width: 100%; padding: 13px 16px; margin-bottom: 12px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--cream); font-family: var(--font-body);
+  font-size: .9rem; outline: none;
+}
+.login-input:focus { border-color: rgba(155,31,82,0.5); }
+.login-btn {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, var(--crimson), var(--rose));
+  border: none; border-radius: 8px; color: #fff;
+  font-size: .95rem; font-weight: 500; cursor: pointer;
+  font-family: var(--font-body); margin-top: 8px;
+}
+.login-err { color: #e05070; font-size: .82rem; margin-top: 10px; display: none; }
+
+/* ADMIN LAYOUT */
+.admin-layout { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 240px; flex-shrink: 0;
+  background: var(--bg2); border-right: 1px solid var(--border);
+  padding: 24px 0; position: fixed; top: 0; left: 0; bottom: 0;
+  display: flex; flex-direction: column;
+}
+.sidebar-logo {
+  padding: 0 24px 24px; border-bottom: 1px solid var(--border);
+  font-family: var(--font-head); font-size: 1.3rem; color: var(--white);
+}
+.sidebar-logo em { color: var(--gold); font-style: normal; }
+.sidebar-logo small { display: block; font-family: var(--font-body); font-size: .7rem; color: var(--muted); margin-top: 4px; letter-spacing: 2px; text-transform: uppercase; }
+.sidebar-nav { padding: 16px 12px; flex: 1; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px; border-radius: 8px; cursor: pointer;
+  color: var(--muted); font-size: .88rem; transition: all .2s; margin-bottom: 4px;
+}
+.nav-item:hover { background: var(--bg3); color: var(--white); }
+.nav-item.active { background: rgba(155,31,82,0.15); color: var(--rose); }
+.nav-item .icon { font-size: 1.1rem; }
+.sidebar-logout { padding: 16px 12px; border-top: 1px solid var(--border); }
+.logout-btn {
+  width: 100%; padding: 10px; background: none;
+  border: 1px solid var(--border); border-radius: 8px;
+  color: var(--muted); cursor: pointer; font-family: var(--font-body);
+  font-size: .85rem; transition: all .2s;
+}
+.logout-btn:hover { color: var(--rose); border-color: rgba(155,31,82,0.3); }
+
+.main-panel { margin-left: 240px; flex: 1; padding: 32px; }
+
+.panel-header { margin-bottom: 32px; }
+.panel-title { font-family: var(--font-head); font-size: 2rem; font-weight: 300; color: var(--white); }
+.panel-sub { color: var(--muted); font-size: .88rem; margin-top: 6px; }
+
+/* STATS */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+.stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+.stat-number { font-family: var(--font-head); font-size: 2.2rem; font-weight: 300; color: var(--white); }
+.stat-label { font-size: .78rem; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+.stat-accent { color: var(--rose); }
+
+/* POSTS LIST */
+.section { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; }
+.section-head {
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.section-head h3 { font-family: var(--font-head); font-size: 1.2rem; color: var(--white); }
+.add-btn {
+  padding: 9px 20px; background: linear-gradient(135deg, var(--crimson), var(--rose));
+  border: none; border-radius: 6px; color: #fff; font-size: .82rem; cursor: pointer;
+  font-family: var(--font-body); font-weight: 500;
+}
+
+.posts-table { width: 100%; }
+.table-row {
+  display: grid; grid-template-columns: 1fr auto auto auto;
+  gap: 16px; align-items: center;
+  padding: 16px 24px; border-bottom: 1px solid var(--border);
+  transition: background .2s;
+}
+.table-row:hover { background: var(--bg3); }
+.table-row:last-child { border-bottom: none; }
+.post-title-cell { font-size: .9rem; color: var(--cream); }
+.post-cat-badge {
+  padding: 3px 10px; border-radius: 10px; font-size: .72rem;
+  background: rgba(155,31,82,0.15); color: var(--rose); white-space: nowrap;
+}
+.post-date-cell { font-size: .78rem; color: var(--muted); white-space: nowrap; }
+.table-actions { display: flex; gap: 8px; }
+.action-btn {
+  padding: 6px 12px; border-radius: 4px; font-size: .78rem; cursor: pointer;
+  border: 1px solid var(--border); background: none; font-family: var(--font-body);
+  transition: all .2s;
+}
+.edit-btn { color: var(--gold); border-color: rgba(200,144,42,0.3); }
+.edit-btn:hover { background: rgba(200,144,42,0.1); }
+.delete-btn { color: #e05070; border-color: rgba(220,50,80,0.3); }
+.delete-btn:hover { background: rgba(220,50,80,0.1); }
+
+/* EDITOR */
+.editor-wrap { display: none; }
+.editor-wrap.active { display: block; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { margin-bottom: 20px; }
+.form-group.full { grid-column: 1/-1; }
+.form-label { display: block; font-size: .82rem; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.form-control {
+  width: 100%; padding: 12px 16px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--cream); font-family: var(--font-body);
+  font-size: .9rem; outline: none; transition: border-color .2s;
+}
+.form-control:focus { border-color: rgba(155,31,82,0.5); }
+select.form-control option { background: var(--bg3); }
+textarea.form-control { min-height: 280px; resize: vertical; line-height: 1.7; }
+.editor-form { padding: 24px; }
+.editor-actions { display: flex; gap: 12px; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border); }
+.save-btn { padding: 12px 28px; background: linear-gradient(135deg, var(--crimson), var(--rose)); border: none; border-radius: 6px; color: #fff; font-size: .9rem; cursor: pointer; font-family: var(--font-body); }
+.cancel-btn { padding: 12px 28px; background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font-size: .9rem; cursor: pointer; font-family: var(--font-body); }
+.cancel-btn:hover { color: var(--cream); }
+.draft-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: .85rem; }
+.toggle { width: 44px; height: 24px; background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; position: relative; cursor: pointer; transition: background .2s; }
+.toggle.on { background: var(--crimson); border-color: var(--crimson); }
+.toggle::after { content: ''; position: absolute; width: 18px; height: 18px; background: #fff; border-radius: 50%; top: 2px; left: 2px; transition: transform .2s; }
+.toggle.on::after { transform: translateX(20px); }
+
+/* COMMENTS PANEL */
+.comment-row {
+  padding: 16px 24px; border-bottom: 1px solid var(--border);
+}
+.comment-row:last-child { border-bottom: none; }
+.comment-row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.comment-row-meta { font-size: .8rem; color: var(--muted); }
+.comment-row-text { font-size: .88rem; color: var(--cream); line-height: 1.6; margin-bottom: 12px; }
+.approve-btn { padding: 5px 14px; background: rgba(30,120,70,0.2); border: 1px solid rgba(30,160,80,0.3); color: #60d090; border-radius: 4px; font-size: .78rem; cursor: pointer; font-family: var(--font-body); }
+.reject-btn  { padding: 5px 14px; background: rgba(160,30,50,0.15); border: 1px solid rgba(200,40,60,0.3); color: #e06080; border-radius: 4px; font-size: .78rem; cursor: pointer; font-family: var(--font-body); }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; right: 24px; z-index: 999; padding: 14px 24px; border-radius: 8px; background: var(--bg3); border: 1px solid rgba(155,31,82,0.4); color: var(--cream); font-size: .88rem; box-shadow: 0 8px 30px rgba(0,0,0,0.5); transform: translateY(80px); opacity: 0; transition: all .35s; pointer-events: none; }
+.toast.show { transform: translateY(0); opacity: 1; }
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main-panel { margin-left: 0; padding: 20px; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">AFTER <em>DARK</em></div>
+    <div class="login-sub">PANEL ADMINISTRACYJNY</div>
+    <input class="login-input" type="password" id="loginPass" placeholder="Hasło admina" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Zaloguj się</button>
+    <div class="login-err" id="loginErr">Nieprawidłowe hasło</div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-layout" id="adminPanel" style="display:none">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">AFTER <em>DARK</em><small>Admin Panel</small></div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" onclick="showPanel('dashboard')" id="nav-dashboard">
+        <span class="icon">📊</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="showPanel('posts')" id="nav-posts">
+        <span class="icon">✍️</span> Artykuły
+      </div>
+      <div class="nav-item" onclick="showPanel('comments')" id="nav-comments">
+        <span class="icon">💬</span> Komentarze
+        <span id="pendingBadge" style="margin-left:auto;background:var(--rose);color:#fff;font-size:.65rem;padding:2px 7px;border-radius:10px;display:none">0</span>
+      </div>
+      <div class="nav-item" onclick="showPanel('newsletter')" id="nav-newsletter">
+        <span class="icon">💌</span> Newsletter
+      </div>
+    </nav>
+    <div class="sidebar-logout">
+      <button class="logout-btn" onclick="doLogout()">Wyloguj się</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-panel">
+    <!-- DASHBOARD -->
+    <div id="panel-dashboard">
+      <div class="panel-header">
+        <h1 class="panel-title">Dashboard</h1>
+        <p class="panel-sub">Witaj z powrotem 🌙</p>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-number" id="statPosts">—</div><div class="stat-label">Artykułów</div></div>
+        <div class="stat-card"><div class="stat-number stat-accent" id="statPending">—</div><div class="stat-label">Komentarzy do akceptacji</div></div>
+        <div class="stat-card"><div class="stat-number" id="statComments">—</div><div class="stat-label">Komentarzy łącznie</div></div>
+        <div class="stat-card"><div class="stat-number" id="statSubs">—</div><div class="stat-label">Subskrybentów</div></div>
+      </div>
+      <div class="section">
+        <div class="section-head"><h3>Ostatnie artykuły</h3><button class="add-btn" onclick="newPost()">+ Nowy artykuł</button></div>
+        <div id="recentPosts"></div>
+      </div>
+    </div>
+
+    <!-- POSTS -->
+    <div id="panel-posts" style="display:none">
+      <div class="panel-header">
+        <h1 class="panel-title">Artykuły</h1>
+        <p class="panel-sub">Zarządzaj wszystkimi wpisami na blogu</p>
+      </div>
+
+      <!-- LIST -->
+      <div class="section" id="postsList">
+        <div class="section-head"><h3>Wszystkie artykuły</h3><button class="add-btn" onclick="newPost()">+ Nowy artykuł</button></div>
+        <div id="postsTableBody"></div>
+      </div>
+
+      <!-- EDITOR -->
+      <div class="section editor-wrap" id="postEditor">
+        <div class="section-head">
+          <h3 id="editorTitle">Nowy artykuł</h3>
+          <label class="draft-toggle">
+            <div class="toggle" id="publishToggle" onclick="this.classList.toggle('on')" title="Opublikowany"></div>
+            <span>Opublikowany</span>
+          </label>
+        </div>
+        <div class="editor-form">
+          <input type="hidden" id="editId">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label class="form-label">Tytuł artykułu *</label>
+              <input class="form-control" id="editTitle" type="text" placeholder="Wpisz chwytliwy tytuł...">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Kategoria *</label>
+              <select class="form-control" id="editCat">
+                <option value="zwiazki">Związki</option>
+                <option value="zabawy">Zabawy</option>
+                <option value="fantazje">Fantazje</option>
+                <option value="porady">Porady</option>
+                <option value="lifestyle">Lifestyle</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Czas czytania (minuty)</label>
+              <input class="form-control" id="editReadTime" type="number" min="1" max="30" value="5">
+            </div>
+            <div class="form-group full">
+              <label class="form-label">URL zdjęcia (nagłówkowe)</label>
+              <input class="form-control" id="editImage" type="url" placeholder="https://images.unsplash.com/...">
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Zajawka (2-3 zdania) *</label>
+              <textarea class="form-control" id="editExcerpt" style="min-height:90px" placeholder="Krótki opis artykułu widoczny na liście..."></textarea>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Treść artykułu (HTML) *</label>
+              <textarea class="form-control" id="editContent" placeholder="&lt;p&gt;Treść artykułu w HTML...&lt;/p&gt;&#10;&lt;h2&gt;Nagłówek sekcji&lt;/h2&gt;&#10;&lt;p&gt;Kolejny paragraf...&lt;/p&gt;"></textarea>
+            </div>
+          </div>
+          <div class="editor-actions">
+            <button class="save-btn" onclick="savePost()">💾 Zapisz artykuł</button>
+            <button class="cancel-btn" onclick="cancelEdit()">Anuluj</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMENTS -->
+    <div id="panel-comments" style="display:none">
+      <div class="panel-header">
+        <h1 class="panel-title">Komentarze</h1>
+        <p class="panel-sub">Moderuj komentarze przed publikacją</p>
+      </div>
+      <div class="section">
+        <div class="section-head"><h3>Oczekujące na akceptację</h3></div>
+        <div id="pendingComments"></div>
+      </div>
+      <div class="section" style="margin-top:24px">
+        <div class="section-head"><h3>Opublikowane</h3></div>
+        <div id="approvedComments"></div>
+      </div>
+    </div>
+
+    <!-- NEWSLETTER -->
+    <div id="panel-newsletter" style="display:none">
+      <div class="panel-header">
+        <h1 class="panel-title">Newsletter</h1>
+        <p class="panel-sub">Lista subskrybentów</p>
+      </div>
+      <div class="section">
+        <div class="section-head"><h3>Subskrybenci</h3></div>
+        <div id="subscribersList" style="padding:24px;color:var(--muted);font-size:.9rem"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="adminToast"></div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────
+const ADMIN_PASSWORD = 'afterdark2024!'; // ZMIEN TO HASLO
+const SUPABASE_URL   = 'TWOJ_SUPABASE_URL';
+const SUPABASE_KEY   = 'TWOJ_SUPABASE_ANON_KEY';
+let sb = null;
+let posts = [];
+let editingId = null;
+
+// ── LOGIN ────────────────────────────────────────────
+function doLogin() {
+  const pass = document.getElementById('loginPass').value;
+  if (pass === ADMIN_PASSWORD) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'flex';
+    sessionStorage.setItem('ad_auth', '1');
+    initAdmin();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+    document.getElementById('loginPass').value = '';
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem('ad_auth');
+  location.reload();
+}
+
+if (sessionStorage.getItem('ad_auth') === '1') {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminPanel').style.display = 'flex';
+}
+
+// ── INIT ─────────────────────────────────────────────
+async function initAdmin() {
+  if (typeof window.supabase !== 'undefined') {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  }
+  await loadAll();
+}
+
+async function loadAll() {
+  await Promise.all([loadPostsAdmin(), loadCommentsAdmin(), loadSubs()]);
+  updateStats();
+  renderRecentPosts();
+  renderPostsTable();
+}
+
+// ── POSTS ─────────────────────────────────────────────
+async function loadPostsAdmin() {
+  if (!sb) { posts = getDemoPosts(); return; }
+  const { data } = await sb.from('posts').select('*').order('created_at', { ascending: false });
+  posts = data || getDemoPosts();
+}
+
+function getDemoPosts() {
+  return [
+    { id: 1, title: 'Jak rozpalić ogień w związku', category: 'zwiazki', published: true, created_at: new Date().toISOString(), read_time: 5 },
+    { id: 2, title: 'Roleplay dla początkujących', category: 'fantazje', published: true, created_at: new Date(Date.now()-86400000).toISOString(), read_time: 4 },
+    { id: 3, title: 'Masaż erotyczny — przewodnik', category: 'lifestyle', published: false, created_at: new Date(Date.now()-172800000).toISOString(), read_time: 7 }
+  ];
+}
+
+function renderRecentPosts() {
+  const el = document.getElementById('recentPosts');
+  const slice = posts.slice(0, 5);
+  el.innerHTML = slice.map(p => `
+    <div class="table-row">
+      <div class="post-title-cell">${p.title} ${!p.published ? '<span style="color:var(--muted);font-size:.75rem">(wersja robocza)</span>' : ''}</div>
+      <div class="post-cat-badge">${p.category}</div>
+      <div class="post-date-cell">${fmtDate(p.created_at)}</div>
+      <div class="table-actions">
+        <button class="action-btn edit-btn" onclick="editPost(${p.id})">Edytuj</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderPostsTable() {
+  const el = document.getElementById('postsTableBody');
+  el.innerHTML = posts.map(p => `
+    <div class="table-row">
+      <div class="post-title-cell">${p.title} ${!p.published ? '<span style="color:var(--muted);font-size:.75rem">(szkic)</span>' : ''}</div>
+      <div class="post-cat-badge">${p.category}</div>
+      <div class="post-date-cell">${fmtDate(p.created_at)}</div>
+      <div class="table-actions">
+        <button class="action-btn edit-btn" onclick="editPost(${p.id})">Edytuj</button>
+        <button class="action-btn delete-btn" onclick="deletePost(${p.id})">Usuń</button>
+      </div>
+    </div>`).join('');
+}
+
+function newPost() {
+  editingId = null;
+  document.getElementById('editorTitle').textContent = 'Nowy artykuł';
+  document.getElementById('editId').value = '';
+  document.getElementById('editTitle').value = '';
+  document.getElementById('editExcerpt').value = '';
+  document.getElementById('editContent').value = '';
+  document.getElementById('editImage').value = '';
+  document.getElementById('editReadTime').value = '5';
+  document.getElementById('editCat').value = 'zwiazki';
+  document.getElementById('publishToggle').classList.add('on');
+  showEditor();
+}
+
+function editPost(id) {
+  const post = posts.find(p => p.id == id);
+  if (!post) return;
+  editingId = id;
+  document.getElementById('editorTitle').textContent = 'Edytuj artykuł';
+  document.getElementById('editId').value = id;
+  document.getElementById('editTitle').value = post.title || '';
+  document.getElementById('editExcerpt').value = post.excerpt || '';
+  document.getElementById('editContent').value = post.content || '';
+  document.getElementById('editImage').value = post.image || '';
+  document.getElementById('editReadTime').value = post.read_time || 5;
+  document.getElementById('editCat').value = post.category || 'zwiazki';
+  const toggle = document.getElementById('publishToggle');
+  post.published ? toggle.classList.add('on') : toggle.classList.remove('on');
+  showEditor();
+}
+
+function showEditor() {
+  document.getElementById('postsList').style.display = 'none';
+  document.getElementById('postEditor').classList.add('active');
+}
+
+function cancelEdit() {
+  document.getElementById('postsList').style.display = 'block';
+  document.getElementById('postEditor').classList.remove('active');
+}
+
+async function savePost() {
+  const title     = document.getElementById('editTitle').value.trim();
+  const excerpt   = document.getElementById('editExcerpt').value.trim();
+  const content   = document.getElementById('editContent').value.trim();
+  const image     = document.getElementById('editImage').value.trim();
+  const category  = document.getElementById('editCat').value;
+  const read_time = parseInt(document.getElementById('editReadTime').value) || 5;
+  const published = document.getElementById('publishToggle').classList.contains('on');
+
+  if (!title || !excerpt) { showToast('⚠️ Tytuł i zajawka są wymagane'); return; }
+
+  const data = { title, excerpt, content, image, category, read_time, published };
+
+  if (sb) {
+    if (editingId) {
+      await sb.from('posts').update(data).eq('id', editingId);
+    } else {
+      await sb.from('posts').insert(data);
+    }
+    await loadPostsAdmin();
+  } else {
+    if (editingId) {
+      const idx = posts.findIndex(p => p.id == editingId);
+      if (idx > -1) posts[idx] = { ...posts[idx], ...data };
+    } else {
+      posts.unshift({ id: Date.now(), ...data, created_at: new Date().toISOString() });
+    }
+  }
+
+  renderPostsTable();
+  renderRecentPosts();
+  updateStats();
+  cancelEdit();
+  showToast(editingId ? '✅ Artykuł zaktualizowany!' : '✅ Artykuł opublikowany!');
+}
+
+async function deletePost(id) {
+  if (!confirm('Usunąć ten artykuł? Operacja jest nieodwracalna.')) return;
+  if (sb) { await sb.from('posts').delete().eq('id', id); await loadPostsAdmin(); }
+  else { posts = posts.filter(p => p.id != id); }
+  renderPostsTable(); renderRecentPosts(); updateStats();
+  showToast('🗑️ Artykuł usunięty');
+}
+
+// ── COMMENTS ──────────────────────────────────────────
+let comments = [];
+async function loadCommentsAdmin() {
+  if (!sb) { comments = []; return; }
+  const { data } = await sb.from('comments').select('*').order('created_at', { ascending: false });
+  comments = data || [];
+  const pending = comments.filter(c => !c.approved).length;
+  const badge = document.getElementById('pendingBadge');
+  if (pending > 0) { badge.textContent = pending; badge.style.display = 'block'; }
+}
+
+function renderCommentsPanel() {
+  const pending  = document.getElementById('pendingComments');
+  const approved = document.getElementById('approvedComments');
+  const pList = comments.filter(c => !c.approved);
+  const aList = comments.filter(c => c.approved);
+
+  pending.innerHTML = pList.length ? pList.map(commentRow).join('') : '<p style="padding:24px;color:var(--muted);font-size:.9rem">Brak komentarzy do moderacji 🎉</p>';
+  approved.innerHTML = aList.length ? aList.map(commentRow).join('') : '<p style="padding:24px;color:var(--muted);font-size:.9rem">Brak zaakceptowanych komentarzy</p>';
+}
+
+function commentRow(c) {
+  return `<div class="comment-row">
+    <div class="comment-row-header">
+      <span class="comment-row-meta">🌹 <strong>${c.author_name}</strong> — post #${c.post_id} — ${fmtDate(c.created_at)}</span>
+      <div style="display:flex;gap:8px">
+        ${!c.approved ? `<button class="approve-btn" onclick="approveComment(${c.id})">✓ Akceptuj</button>` : '<span style="color:var(--muted);font-size:.78rem">✓ Opublikowany</span>'}
+        <button class="reject-btn" onclick="deleteComment(${c.id})">✕ Usuń</button>
+      </div>
+    </div>
+    <div class="comment-row-text">${c.content}</div>
+  </div>`;
+}
+
+async function approveComment(id) {
+  if (sb) await sb.from('comments').update({ approved: true }).eq('id', id);
+  const c = comments.find(c => c.id == id);
+  if (c) c.approved = true;
+  renderCommentsPanel();
+  updateStats();
+  showToast('✅ Komentarz opublikowany');
+}
+
+async function deleteComment(id) {
+  if (!confirm('Usunąć komentarz?')) return;
+  if (sb) await sb.from('comments').delete().eq('id', id);
+  comments = comments.filter(c => c.id != id);
+  renderCommentsPanel(); updateStats();
+  showToast('🗑️ Komentarz usunięty');
+}
+
+// ── NEWSLETTER ────────────────────────────────────────
+let subs = [];
+async function loadSubs() {
+  if (!sb) { subs = []; return; }
+  const { data } = await sb.from('newsletter').select('*').order('created_at', { ascending: false });
+  subs = data || [];
+}
+
+function renderNewsletter() {
+  const el = document.getElementById('subscribersList');
+  if (!subs.length) { el.innerHTML = '<p>Brak subskrybentów.</p>'; return; }
+  el.innerHTML = `<p style="margin-bottom:16px;color:var(--cream)">Łącznie: <strong>${subs.length}</strong> subskrybentów</p>` +
+    subs.map(s => `<div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><span>${s.email}</span><span style="color:var(--muted);font-size:.78rem">${fmtDate(s.created_at)}</span></div>`).join('');
+}
+
+// ── STATS ──────────────────────────────────────────────
+function updateStats() {
+  document.getElementById('statPosts').textContent    = posts.length;
+  document.getElementById('statPending').textContent  = comments.filter(c=>!c.approved).length;
+  document.getElementById('statComments').textContent = comments.length;
+  document.getElementById('statSubs').textContent     = subs.length;
+}
+
+// ── NAVIGATION ────────────────────────────────────────
+function showPanel(name) {
+  ['dashboard','posts','comments','newsletter'].forEach(n => {
+    document.getElementById(`panel-${n}`).style.display = n === name ? 'block' : 'none';
+    document.getElementById(`nav-${n}`).classList.toggle('active', n === name);
+  });
+  if (name === 'comments') renderCommentsPanel();
+  if (name === 'newsletter') renderNewsletter();
+  if (name === 'posts') { cancelEdit(); renderPostsTable(); }
+}
+
+// ── UTILS ──────────────────────────────────────────────
+function fmtDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('pl-PL', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('adminToast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (sessionStorage.getItem('ad_auth') === '1') initAdmin();
+});
+</script>
+</body>
+</html>
