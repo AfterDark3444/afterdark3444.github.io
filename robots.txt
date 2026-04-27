@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://afterdark3444.github.io/sitemap.xml
