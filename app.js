@@ -5,8 +5,8 @@
 
 // ── SUPABASE CONFIG ──────────────────
 // Wklej swoje dane z Supabase Dashboard → Settings → API
-const SUPABASE_URL  = 'TWOJ_SUPABASE_URL';
-const SUPABASE_KEY  = 'TWOJ_SUPABASE_ANON_KEY';
+const SUPABASE_URL  = 'https://ankjsyifirjeyddfvefa.supabase.co';
+const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFua2pzeWlmaXJqZXlkZGZ2ZWZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxNjA5OTcsImV4cCI6MjA5MTczNjk5N30.st0Wn5wYiZDMJYDKjcqrhnY3kxEzkJIiIayJstr24J4';
 
 let supabase = null;
 let allPosts = [];
@@ -68,7 +68,7 @@ async function loadPosts() {
 function useDemoData() {
   allPosts = [
     {
-      id: 1, featured: true,
+      id: 1, slug: 'jak-urozmaicic-zwiazek', featured: true,
       title: 'Jak rozpalić ogień w związku — przewodnik dla odważnych par',
       excerpt: 'Rutyna to cichy wróg namiętności. Odkryj sprawdzone sposoby, by każdy wieczór zamienić w niezapomniane przeżycie. Po trzech minutach z After Dark już nic nie będzie takie samo...',
       content: `<p>Każdy związek przechodzi przez fazy — od euforii pierwszych spotkań, przez komfort codzienności, aż po chwile, gdy rutyna zaczyna tłumić pożądanie. To naturalne. Ale nie nieuniknione.</p>
@@ -92,7 +92,7 @@ function useDemoData() {
       created_at: new Date().toISOString(), read_time: 5
     },
     {
-      id: 2,
+      id: 2, slug: 'roleplay-dla-poczatkujacych',
       title: 'Roleplay dla początkujących — jak zacząć bez wstydu',
       excerpt: 'Myślisz, że odgrywanie ról to tylko dla zaawansowanych? Nic bardziej mylnego. Wystarczy jedno zdanie, by wejść w nową rolę i odkryć siebie na nowo.',
       content: `<p>Roleplay wzbudza w wielu parach jednocześnie ekscytację i lęk. "A co jeśli wyjdę śmiesznie?" "Co jeśli partner/partnerka się roześmieje?" To naturalne obawy. I właśnie dlatego napisaliśmy ten przewodnik.</p>
@@ -108,7 +108,7 @@ function useDemoData() {
       created_at: new Date(Date.now() - 86400000).toISOString(), read_time: 4
     },
     {
-      id: 3,
+      id: 3, slug: 'best-couples-games-for-adults',
       title: 'Najlepsza gra erotyczna dla par — recenzja After Dark',
       excerpt: 'Testowaliśmy dziesiątki gier dla dorosłych. Żadna nie robi tego, co After Dark — 200 wyzwań, 5 poziomów, 7 języków. Oto nasza szczera ocena.',
       content: `<p>Na rynku gier erotycznych dla par nie brakuje propozycji. Karty, kości, aplikacje. Większość jest albo zbyt nieśmiała, albo zbyt ekstremalnie. <strong>After Dark</strong> znalazło złoty środek.</p>
@@ -124,7 +124,7 @@ function useDemoData() {
       created_at: new Date(Date.now() - 172800000).toISOString(), read_time: 6
     },
     {
-      id: 4,
+      id: 4, slug: 'jak-rozmawiac-o-seksie',
       title: 'Jak rozmawiać o seksie z partnerem — bez wstydu i stresu',
       excerpt: 'Większość problemów w sypialni wynika nie z braku chęci, ale z braku rozmowy. Oto jak zacząć tę ważną rozmowę — i jak ją prowadzić.',
       content: `<p>Badania pokazują, że pary, które rozmawiają o seksie, mają o 50% większe zadowolenie z życia intymnego. Mimo to większość unika tego tematu jak ognia.</p>
@@ -300,7 +300,7 @@ async function openPost(post) {
           <input class="form-input" id="commentEmail" type="email" placeholder="Email (nie będzie widoczny)" maxlength="100">
         </div>
         <textarea class="form-input" id="commentText" placeholder="Napisz komentarz..." maxlength="1000"></textarea>
-        <button class="submit-comment" onclick="submitComment(${post.id})">Wyślij komentarz →</button>
+        <button class="submit-comment" onclick="submitComment('${post.slug}', '${(post.title||'').replace(/'/g,'')}')">Wyślij komentarz →</button>
       </div>
       <div class="comments-list" id="commentsList">
         <div class="loading-state"><div class="spinner"></div></div>
@@ -310,7 +310,7 @@ async function openPost(post) {
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
 
-  await loadComments(post.id);
+  await loadComments(post.slug);
 }
 
 function closeModal() {
@@ -319,7 +319,7 @@ function closeModal() {
 }
 
 // ── COMMENTS ─────────────────────────
-async function loadComments(postId) {
+async function loadComments(slug) {
   const list = document.getElementById('commentsList');
   if (!list) return;
 
@@ -328,11 +328,11 @@ async function loadComments(postId) {
     return;
   }
 
+  // tabela blog_comments (wspolna z monitorem rady + dashboardem Maxi Bot), klucz = slug
   const { data, error } = await supabase
-    .from('comments')
+    .from('blog_comments')
     .select('*')
-    .eq('post_id', postId)
-    .eq('approved', true)
+    .eq('slug', slug)
     .order('created_at', { ascending: true });
 
   if (error || !data || data.length === 0) {
@@ -340,36 +340,40 @@ async function loadComments(postId) {
     return;
   }
 
-  list.innerHTML = data.map(c => `
-    <div class="comment-item">
+  list.innerHTML = data.map(c => {
+    const bot = c.is_bot;
+    const who = bot ? '🌹 <strong>After Dark</strong>' : '👤 ' + escHtml(c.author_name || 'Gość');
+    const style = bot ? 'border-left:3px solid #ff4d8d;padding-left:12px;margin-left:18px;' : '';
+    return `
+    <div class="comment-item" style="${style}">
       <div class="comment-header">
-        <span class="comment-author">🌹 ${escHtml(c.author_name)}</span>
+        <span class="comment-author">${who}</span>
         <span class="comment-date">${formatDate(c.created_at)}</span>
       </div>
-      <p class="comment-text">${escHtml(c.content)}</p>
-    </div>`).join('');
+      <p class="comment-text">${escHtml(c.body || '')}</p>
+    </div>`;
+  }).join('');
 }
 
-async function submitComment(postId) {
+async function submitComment(slug, title) {
   const name  = document.getElementById('commentName')?.value?.trim();
-  const email = document.getElementById('commentEmail')?.value?.trim();
   const text  = document.getElementById('commentText')?.value?.trim();
 
   if (!name || !text) { showToast('⚠️ Wpisz imię i treść komentarza'); return; }
   if (text.length < 10) { showToast('⚠️ Komentarz jest zbyt krótki'); return; }
 
-  if (supabase) {
-    const { error } = await supabase.from('comments').insert({
-      post_id: postId, author_name: name, email: email || null,
-      content: text, approved: false
-    });
-    if (error) { showToast('❌ Błąd wysyłania — spróbuj ponownie'); return; }
-  }
+  if (!supabase) { showToast('❌ Baza nie podłączona'); return; }
+
+  const { error } = await supabase.from('blog_comments').insert({
+    slug: slug, author_name: name, body: text, lang: 'pl', is_bot: false
+  });
+  if (error) { showToast('❌ Błąd wysyłania — spróbuj ponownie'); return; }
 
   document.getElementById('commentName').value  = '';
-  document.getElementById('commentEmail').value = '';
+  const em = document.getElementById('commentEmail'); if (em) em.value = '';
   document.getElementById('commentText').value  = '';
-  showToast('✅ Komentarz czeka na moderację — dziękujemy!');
+  showToast('✅ Komentarz dodany — dziękujemy!');
+  await loadComments(slug);  // odswiez liste (pokaze tez odpowiedz rady gdy dotrze)
 }
 
 // ── NEWSLETTER ────────────────────────
